@@ -11,14 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.loto.viewModels.LoteriaViewModels
 
 
@@ -42,22 +36,34 @@ fun LoteriaView(viewModels:LoteriaViewModels){
         if(lottonNumbers.isEmpty()){
             Text(text = "Loteria", fontSize = 40.sp, fontWeight = FontWeight.Bold)
         }else{
-            LotteryNumbers(lottonNumbers)
+            LotteryNumbers(lottonNumbers, viewModels)
+            if(viewModels.isLoading){
+                CircularProgressIndicator()
+                Text(
+                    text = viewModels.bolita.toString(),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(10.dp)
+
+                )
+            }
         }
-        Button(onClick = {viewModels.generateLotoNumbers()}){
+        Button(onClick = {viewModels.fetchData()}){
             Text(text = "Generar", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-fun LotteryNumbers(lottonNumbers: List<Int>) {
+fun LotteryNumbers(lottonNumbers: List<Int>, viewModel: LoteriaViewModels) {
     LazyRow(
         contentPadding = PaddingValues(
             horizontal = 16.dp,
             vertical = 8.dp
         )
     ) {
+        var i:Int = 0
         items(lottonNumbers){ number->
             Box(
                 contentAlignment = Alignment.Center,
@@ -66,11 +72,12 @@ fun LotteryNumbers(lottonNumbers: List<Int>) {
                     .size(48.dp)
                     .background(Color.Red, CircleShape)
             ){
-                Text(
-                    text = number.toString(),
-                    color= Color.White,
-                    fontSize = 24.sp
-                )
+
+                    Text(
+                        text = number.toString(),
+                        color= Color.White,
+                        fontSize = 24.sp
+                    )
             }
         }
     }
